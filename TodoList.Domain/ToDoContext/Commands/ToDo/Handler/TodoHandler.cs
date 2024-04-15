@@ -16,7 +16,8 @@ namespace TodoList.Domain.ToDoContext.Commands.ToDo.Handler
 {
     public class TodoHandler : ICommandHandler<CreateTodo>,
         ICommandHandler<EditTodo>,
-        ICommandHandler<DeleteTodo>
+        ICommandHandler<DeleteTodo>,
+        ICommandHandler<UpdateStatusTodo>
     {
         private IValidator<Todo> _todoValidation;
         private readonly ITodoRepository _todoRepository;
@@ -28,7 +29,7 @@ namespace TodoList.Domain.ToDoContext.Commands.ToDo.Handler
         }
         public async Task<ICommandResult> ManipularAsync(CreateTodo command)
         {
-            var ToDoDto = new Todo(command.Title, command.Description,false);
+            var ToDoDto = new Todo(command.Title, command.Description, command.IsCompleted, command.IdUser);
 
             ValidationResult resultValidation = await _todoValidation.ValidateAsync(ToDoDto);
 
@@ -46,7 +47,7 @@ namespace TodoList.Domain.ToDoContext.Commands.ToDo.Handler
         {
            var todoObject = await _todoRepository.GetToDoById(command.Id);
 
-            todoObject.EditAttributes(command.Title, command.Description, command.IsCompleted);
+            todoObject.EditAttributes(command.Title, command.Description, command.IsCompleted,command.CreateDate);
 
             ValidationResult resultValidation = await _todoValidation.ValidateAsync(todoObject);
 
@@ -65,6 +66,17 @@ namespace TodoList.Domain.ToDoContext.Commands.ToDo.Handler
             
             
             return new TodoCommandResult(true, "Succes!", "Successfully deleted");
+        }
+
+        public async Task<ICommandResult> ManipularAsync(UpdateStatusTodo command)
+        {
+            var todoObject = await _todoRepository.GetToDoById(command.IdTodo);
+
+            todoObject.toggleIsCompleteds();
+
+            await _todoRepository.Edit(todoObject);
+
+            return new TodoCommandResult(true, "Toggle value!", todoObject);
         }
     }
 }

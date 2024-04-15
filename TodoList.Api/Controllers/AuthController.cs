@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using System.Text;
+using TodoList.Api.jwt;
+using TodoList.Domain.ToDoContext.Commands.Account.Input;
+using TodoList.Domain.ToDoContext.Commands.Account.Inputs;
 using TodoList.Domain.ToDoContext.Entities;
 using TodoList.Domain.ToDoContext.Repositories;
 
@@ -14,32 +17,63 @@ namespace TodoList.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserRepository _repository;
-        public AuthController(IUserRepository repository)
+        private readonly IValidator<User> _userValidation;
+        public AuthController(IUserRepository repository, IValidator<User> userValidation)
         {
-             _repository = repository ;
+            _repository = repository;
+            _userValidation = userValidation;
         }
 
         [HttpPost]
-        [Route("v1/Authenticate")]
+        [Route("v1/authenticate")]
         [AllowAnonymous]
-        public async Task<IActionResult> Authenticate([FromBody] string username, string password)
+        public async Task<IActionResult> Authenticate([FromBody] Login account)
         {
-            var list = await _repository.Authenticate(username, password);
 
-          
+            var encryptPassword = encrypt(account.Password);
+            var userLogin = await _repository.Authenticate(account.UserName, encryptPassword);
+
+            if (userLogin == null) return BadRequest("Authentication error! Username or password is invalid");
+
+            var token = TokenService.GenerateToken(userLogin);
+
+           var result = new
+           {
+                token = token,
+                user = new
+                {
+                    userLogin.FullName,
+                    userLogin.UserName,
+                    userLogin.Password,
+                    userLogin.Id
+                }  
+           };
+
+            return Ok(result);
+
         }
 
         [HttpPost]
-        [Route("v1/post")]
-        public async Task<IActionResult> CreateAccount([FromBody] string userName, string password, string fullname)
+        [Route("v1/create-account")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccount account)
         {
+
             try
             {
-                var encryptPassword = encrypt(password);
-                var userData = new User(userName, password, fullname);
-                var result = _repository.Salve(userData);
+                bool searchUserExist = await _repository.SearchforUserName(account.UserName);
 
-                return Ok(result);
+                if (searchUserExist) return NotFound("UserName already exists!");
+
+
+                var encryptPassword = encrypt(account.Password);
+                var userData = new User(account.UserName, account.Password, account.FullName);
+                ValidationResult resultValidation = await _userValidation.ValidateAsync(userData);
+
+                if (!resultValidation.IsValid) return NotFound(resultValidation.Errors);
+
+                _repository.Save(userData);
+                return Ok();
             }
             catch (Exception e)
             {
@@ -61,6 +95,12 @@ namespace TodoList.Api.Controllers
                 sbString.Append(t.ToString("x2"));
 
             return sbString.ToString();
+        }
+
+        protected async Task<bool> ValidateCredentials(string userName, string password)
+        {
+            var userLogin = await _repository.Authenticate(userName, password);
+            return userLogin != null;
         }
 
     }

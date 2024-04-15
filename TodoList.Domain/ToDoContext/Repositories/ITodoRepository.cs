@@ -14,6 +14,6 @@ namespace TodoList.Domain.ToDoContext.Repositories
         bool Delete(Guid id);
         Task<Todo> GetToDoById(Guid id);
 
-        Task<IEnumerable<Todo>> GetAllToDoPerUser(Guid idUser);
+        Task<IEnumerable<Todo>> GetAllToDoPerUser(Guid idUser, int page);
     }
 }

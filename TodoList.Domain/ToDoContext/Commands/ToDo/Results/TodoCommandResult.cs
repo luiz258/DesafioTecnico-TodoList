@@ -29,8 +29,8 @@ namespace TodoList.Domain.ToDoContext.Commands.ToDo.Results
 
         }
 
-        public bool Sucess { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Message { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public object Data { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool Sucess { get; set ; }
+        public string Message { get; set; }
+        public object Data { get; set; }
     }
 }

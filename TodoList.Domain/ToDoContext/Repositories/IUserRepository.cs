@@ -9,10 +9,11 @@ namespace TodoList.Domain.ToDoContext.Repositories
 {
     public interface IUserRepository
     {
-        Task Salve(User user);
+        Task Save(User user);
         Task Edit(User user);
         bool Delete(Guid id);
         Task<User> GetUser(Guid id);
+        Task<bool> SearchforUserName(string username);
 
         Task<User> Authenticate(string userName, string password);
     }

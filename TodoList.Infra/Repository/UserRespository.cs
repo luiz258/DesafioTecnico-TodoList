@@ -45,10 +45,22 @@ namespace TodoList.Infra.Repository
 
         public async Task<User> GetUser(Guid id) => await context.Users.FirstOrDefaultAsync(_ => _.Id == id);
 
-        public async Task Salve(User user)
+        public async Task Save(User user)
         {
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
+        }
+
+        public async Task<bool> SearchforUserName(string username)
+        {
+           var existUser = await context.Users.FirstOrDefaultAsync(_ => _.UserName == username);
+
+            if(existUser != null)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

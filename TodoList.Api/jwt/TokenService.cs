@@ -1,12 +1,10 @@
-﻿using System.Text;
-using System;
-using TodoList.DOMAIN.ToDoContext.Entities;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Claims;
+using System.Text;
 using TodoList.Domain.ToDoContext.Entities;
 
-namespace TodoList.API.jwt
+namespace TodoList.Api.jwt
 {
     public static class TokenService
     {
@@ -16,6 +14,12 @@ namespace TodoList.API.jwt
             var key = Encoding.ASCII.GetBytes(Key.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+
+                    new Claim("User", user.Id.ToString()),
+               
+                }),
                 Expires = DateTime.UtcNow.AddHours(9),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

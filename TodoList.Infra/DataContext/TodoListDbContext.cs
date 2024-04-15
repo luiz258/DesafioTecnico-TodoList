@@ -34,7 +34,7 @@ namespace TodoList.Infra.DataContext
 
                 entity.Property(u => u.Password)
                    .IsRequired(true)
-                   .HasMaxLength(25);
+                   .HasMaxLength(200);
                 
             });
 
@@ -50,6 +50,9 @@ namespace TodoList.Infra.DataContext
                    .HasMaxLength(100);
 
                 entity.Property(t => t.IsCompleted)
+                   .IsRequired(true);
+
+                entity.Property(t => t.CreateDate)
                    .IsRequired(true);
 
                 entity.HasOne(t => t.User)

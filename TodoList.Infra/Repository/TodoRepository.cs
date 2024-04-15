@@ -37,9 +37,12 @@ namespace TodoList.Infra.Repository
             context.SaveChanges();
         }
 
-        public async Task<IEnumerable<Todo>> GetAllToDoPerUser(Guid idUser)
+        public async Task<IEnumerable<Todo>> GetAllToDoPerUser(Guid idUser, int page)
         {
-           return await context.Todos.Where(_ => _.IdUser == idUser).ToListAsync<Todo>();
+           return await context.Todos
+            .OrderByDescending(t => t.CreateDate)
+            .Skip((page - 1) * 10)
+            .Take(10).Where(_ => _.IdUser == idUser).ToListAsync<Todo>();
         }
 
         public async Task<Todo> GetToDoById(Guid id) => await context.Todos.FirstOrDefaultAsync(_ => _.Id == id);

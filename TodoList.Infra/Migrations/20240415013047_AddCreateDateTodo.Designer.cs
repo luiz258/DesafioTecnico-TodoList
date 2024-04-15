@@ -12,8 +12,8 @@ using TodoList.Infra.DataContext;
 namespace TodoList.Infra.Migrations
 {
     [DbContext(typeof(TodoListDbContext))]
-    [Migration("20240412031410_MyMigration")]
-    partial class MyMigration
+    [Migration("20240415013047_AddCreateDateTodo")]
+    partial class AddCreateDateTodo
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,6 +30,9 @@ namespace TodoList.Infra.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -67,8 +70,8 @@ namespace TodoList.Infra.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("UserName")
                         .IsRequired()

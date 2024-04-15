@@ -14,7 +14,7 @@ namespace TodoList.Domain.ToDoContext.Validations
         {
             RuleFor(model => model.Title).NotEmpty().MinimumLength(3).MaximumLength(150);
             RuleFor(model => model.Description).NotEmpty().MinimumLength(3).MaximumLength(250);
-            RuleFor(model => model.IsCompleted).NotEmpty();
+            RuleFor(model => model.IsCompleted);
         }
     }
 }

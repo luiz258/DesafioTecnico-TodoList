@@ -13,6 +13,8 @@ namespace TodoList.Domain.ToDoContext.Commands.ToDo.Inputs
         public string Title { get; set; }
         public string Description { get; set; }
         public bool IsCompleted { get; set; }
+        public DateTime CreateDate { get; set; }
+
 
         public Guid IdUser { get; set; }
 

@@ -9,6 +9,7 @@ using TodoList.Domain.ToDoContext.Entities;
 using TodoList.Domain.ToDoContext.Repositories;
 using TodoList.Infra.Repository;
 using TodoList.Shared.ToDoContext.Commands;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TodoList.Api.Controllers
 {
@@ -58,13 +59,23 @@ namespace TodoList.Api.Controllers
         }
 
         [HttpGet]
-        [Route("v1/getTodo")]
+        [Route("v1/getTodo/{IdUser:Guid}/{page:int}")]
         [AllowAnonymous]
-        public async Task<IEnumerable<Todo>> getTodo([FromBody] Guid IdUser)
+        public async Task<IEnumerable<Todo>> getTodo(Guid IdUser, int page)
         {
-           var list = await _todoRepository.GetAllToDoPerUser(IdUser);
+           var list = await _todoRepository.GetAllToDoPerUser(IdUser, page);
 
             return list;
+        }
+
+        [HttpPut]
+        [Route("v1/toggle-status")]
+        [AllowAnonymous]
+        public async Task<ICommandResult> ToggleStatus([FromBody] UpdateStatusTodo comando)
+        {
+            var result = (TodoCommandResult)await _handler.ManipularAsync(comando);
+
+            return result;
         }
 
     }
