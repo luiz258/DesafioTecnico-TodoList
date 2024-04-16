@@ -29,9 +29,9 @@ namespace TodoList.Api.Controllers
         [HttpPost]
         [Route("v1/post")]
         [AllowAnonymous]
-        public async Task<ICommandResult> Create([FromBody] CreateTodo comando)
+        public async Task<ICommandResult> Create([FromBody] CreateTodo cammand)
         {
-            var result = (TodoCommandResult)await _handler.ManipularAsync(comando);
+            var result = (TodoCommandResult)await _handler.ManipularAsync(cammand);
 
             return result;
 
@@ -40,9 +40,9 @@ namespace TodoList.Api.Controllers
         [HttpPut]
         [Route("v1/edit")]
         [AllowAnonymous]
-        public async Task<ICommandResult> Edit([FromBody] EditTodo comando)
+        public async Task<ICommandResult> Edit([FromBody] EditTodo cammand)
         {
-            var result = (TodoCommandResult)await _handler.ManipularAsync(comando);
+            var result = (TodoCommandResult)await _handler.ManipularAsync(cammand);
 
             return result;
 
@@ -51,9 +51,9 @@ namespace TodoList.Api.Controllers
         [HttpDelete]
         [Route("v1/delete")]
         [AllowAnonymous]
-        public async Task<ICommandResult> Delete([FromBody] DeleteTodo comando)
+        public async Task<ICommandResult> Delete([FromBody] DeleteTodo cammand)
         {
-            var result = (TodoCommandResult)await _handler.ManipularAsync(comando);
+            var result = (TodoCommandResult)await _handler.ManipularAsync(cammand);
 
             return result;
         }
@@ -68,12 +68,14 @@ namespace TodoList.Api.Controllers
             return list;
         }
 
-        [HttpPut]
-        [Route("v1/toggle-status")]
+        [HttpPost]
+        [Route("v1/toggle-status/{idTodo:Guid}")]
         [AllowAnonymous]
-        public async Task<ICommandResult> ToggleStatus([FromBody] UpdateStatusTodo comando)
+        public async Task<ICommandResult> ToggleStatus(Guid idTodo)
         {
-            var result = (TodoCommandResult)await _handler.ManipularAsync(comando);
+            var command = new UpdateStatusTodo();
+            command.IdTodo = idTodo;
+            var result = (TodoCommandResult)await _handler.ManipularAsync(command);
 
             return result;
         }

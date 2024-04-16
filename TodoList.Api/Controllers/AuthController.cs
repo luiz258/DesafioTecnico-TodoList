@@ -28,7 +28,7 @@ namespace TodoList.Api.Controllers
         [Route("v1/authenticate")]
         [AllowAnonymous]
         public async Task<IActionResult> Authenticate([FromBody] Login account)
-        {
+            {
 
             var encryptPassword = encrypt(account.Password);
             var userLogin = await _repository.Authenticate(account.UserName, encryptPassword);
